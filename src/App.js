@@ -1,26 +1,48 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import AudienceDisplay from './matchStateComponents/audienceDisplay';
+import AdminDisplay from './adminDisplay';
+
+import { subscribeToMatchUpdates } from './socket';
+import openSocket from 'socket.io-client';
 
 class App extends Component {
+  // socket;
+  constructor(props) {
+    super(props);
+    this.socket = openSocket('http://localhost:9000');
+    window.io = this.socket.io;
+    // this.socket.on('updateMatch', updatedMatch => {
+    //   console.log('UPDATE');
+    //   this.setState({ currentMatch: updatedMatch });
+    // });
+  }
+  state = { currentMatch: null };
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Switch>
+        <Route
+          path="/admin"
+          component={() => (
+            <AdminDisplay
+              currentMatch={this.state.currentMatch}
+              socket={this.socket}
+            />
+          )}
+          // currentMatch={this.state.currentMatch}
+        />
+        <Route
+          path="/"
+          component={() => (
+            <AudienceDisplay
+              currentMatch={this.state.currentMatch}
+              socket={this.socket}
+            />
+          )}
+          // currentMatch={this.state.currentMatch}
+        />
+      </Switch>
     );
   }
 }
