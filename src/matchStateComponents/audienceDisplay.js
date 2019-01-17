@@ -28,30 +28,32 @@ class AudienceDisplay extends Component {
   }
   render() {
     let currentMatch = this.state.currentMatch;
-    if (currentMatch) {
-      return (
-        <div className="app">
-          <div id="background" />
-          <div id="rocket" />
-          <div id="MatchInfo">
-            <span id="eventName">{currentMatch.eventName}</span>
-            <span id="matchName">
-              {currentMatch.matchType + ' ' + currentMatch.matchNumber}
-            </span>
-          </div>
-          {
+    return (
+      <div className="app">
+        <div id="background" />
+        <div id="rocket" />
+        {currentMatch ? (
+          <div>
+            <div id="MatchInfo">
+              <span id="eventName">{currentMatch.eventName}</span>
+              <span id="matchName">
+                {currentMatch.matchType + ' ' + currentMatch.matchNumber}
+              </span>
+            </div>
             {
-              posted: <ScoresPosted currentMatch={currentMatch} />,
-              pending: <h1>Match is Pending</h1>,
-              inProgress: <MatchTimer currentMatch={currentMatch} />,
-              eStop: <h1 className="red">EMERGENCY STOP</h1>
-            }[currentMatch.matchStatus]
-          }
-        </div>
-      );
-    } else {
-      return 'loading';
-    }
+              {
+                posted: <ScoresPosted currentMatch={currentMatch} />,
+                pending: <h1>Match is Pending</h1>,
+                inProgress: <MatchTimer currentMatch={currentMatch} />,
+                eStop: <h1 className="red">EMERGENCY STOP</h1>
+              }[currentMatch.matchStatus]
+            }
+          </div>
+        ) : (
+          <h1 className="lonelyH1">Connecting to server....</h1>
+        )}
+      </div>
+    );
   }
 }
 

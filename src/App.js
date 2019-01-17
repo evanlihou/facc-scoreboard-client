@@ -10,7 +10,7 @@ class App extends Component {
   // socket;
   constructor(props) {
     super(props);
-    this.socket = openSocket('http://localhost:9000');
+    this.socket = openSocket('http://' + window.location.hostname + ':9000');
     window.io = this.socket.io;
     // this.socket.on('updateMatch', updatedMatch => {
     //   console.log('UPDATE');
