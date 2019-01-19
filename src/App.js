@@ -3,7 +3,6 @@ import { Switch, Route } from 'react-router-dom';
 import AudienceDisplay from './matchStateComponents/audienceDisplay';
 import AdminDisplay from './adminDisplay';
 
-import { subscribeToMatchUpdates } from './socket';
 import openSocket from 'socket.io-client';
 
 class App extends Component {
@@ -12,10 +11,6 @@ class App extends Component {
     super(props);
     this.socket = openSocket('http://' + window.location.hostname + ':9000');
     window.io = this.socket.io;
-    // this.socket.on('updateMatch', updatedMatch => {
-    //   console.log('UPDATE');
-    //   this.setState({ currentMatch: updatedMatch });
-    // });
   }
   state = { currentMatch: null };
 
@@ -30,7 +25,6 @@ class App extends Component {
               socket={this.socket}
             />
           )}
-          // currentMatch={this.state.currentMatch}
         />
         <Route
           path="/"
@@ -40,7 +34,6 @@ class App extends Component {
               socket={this.socket}
             />
           )}
-          // currentMatch={this.state.currentMatch}
         />
       </Switch>
     );

@@ -44,7 +44,7 @@ h1.red {
 
 #rocket {
   z-index: -5;
-  background: url('./images/rocket.jpg') no-repeat center bottom fixed;
+  background: url('./images/rocket.jpg') no-repeat center center fixed;
   background-size: cover;
   position: fixed;
   top: 0;
@@ -63,14 +63,24 @@ h1.red {
   position: relative;
 }
 
-#blueScore {
+#blueScore,
+#blueBox {
   background: lightblue;
   border-color: blue;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 30px;
+  color: black;
 }
 
-#redScore {
+#redScore,
+#redBox {
   background: pink;
   border-color: red;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 30px;
+  color: black;
 }
 
 #MatchInfo {

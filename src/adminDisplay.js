@@ -1,21 +1,9 @@
 import React, { Component } from 'react';
 
 import { Button, Form, Container, Message } from 'semantic-ui-react';
-import { Redirect } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 
 class AdminDisplay extends Component {
-  // static contextTypes = {
-  //   router: React.PropTypes.object
-  // };
-
-  constructor(props) {
-    super(props);
-    // subscribeToMatchUpdates(updatedMatch =>
-    //   this.setState({ currentMatch: updatedMatch })
-    // );
-    // var socket = this.props.socket;
-  }
   state = { currentMatch: null };
 
   componentWillMount(props) {
@@ -23,6 +11,7 @@ class AdminDisplay extends Component {
     this.props.socket.on('updateMatch', updatedMatch => {
       console.log('UPDATE');
       this.setState({ currentMatch: updatedMatch });
+      console.log(updatedMatch);
     });
   }
 
@@ -41,12 +30,28 @@ class AdminDisplay extends Component {
 
   changeField = (e, data) => {
     this.props.socket.emit('updateMatch', {
-      [data.name]: data.value,
+      [data.name]: data.value || '0',
+      _id: this.state.currentMatch._id
+    });
+  };
+
+  changeMultilineField = (e, data) => {
+    data.value = data.value.split('\n');
+    this.changeField(e, data);
+  };
+
+  changeCheckbox = (e, data) => {
+    this.props.socket.emit('updateMatch', {
+      [data.name]: data.checked,
       _id: this.state.currentMatch._id
     });
   };
 
   render() {
+    if (this.state.currentMatch) {
+      var redAlliance = this.state.currentMatch.redAlliance;
+      var blueAlliance = this.state.currentMatch.blueAlliance;
+    }
     return (
       <Container id="adminDisplay">
         <Message info>
@@ -55,29 +60,273 @@ class AdminDisplay extends Component {
             the point values. Point values will be calculated
           </b>
         </Message>
-        <Button
-          onClick={this.updateMatch({
-            matchStatus: 'posted'
-          })}
-        >
-          Post Scores
-        </Button>
         <Button onClick={this.newMatch}>New Match</Button>
+        {this.state.currentMatch && (
+          <div style={{ marginTop: '10px' }}>
+            <Button
+              onClick={this.updateMatch({
+                matchStatus: 'inProgress',
+                setStart: true
+              })}
+            >
+              Start Match
+            </Button>
+            <Button
+              color="red"
+              onClick={this.updateMatch({
+                matchStatus: 'eStop'
+              })}
+            >
+              E-STOP
+            </Button>
+            <Button
+              onClick={this.updateMatch({
+                matchStatus: 'posted'
+              })}
+            >
+              Post Scores
+            </Button>
+          </div>
+        )}
 
         {this.state.currentMatch && (
           <Form>
-            <Form.Group>
+            <Form.Input
+              autoComplete="off"
+              name="eventName"
+              label="Event Name"
+              onChange={this.changeField}
+              value={this.state.currentMatch.eventName}
+            />
+            <Form.Group widths="equal">
               <Form.Input
+                autoComplete="off"
                 name="matchType"
                 label="Match Type"
                 onChange={this.changeField}
                 value={this.state.currentMatch.matchType}
               />
-              <Form.Input label="Match Number" />
+              <Form.Input
+                autoComplete="off"
+                fluid
+                label="Match Number"
+                name="matchNumber"
+                onChange={this.changeField}
+                value={this.state.currentMatch.matchNumber}
+              />
             </Form.Group>
-            <Form.Group>
-              <Form.TextArea label="Teams" />
-            </Form.Group>
+            {/* RED SCORING DETAILS */}
+            <div id="redBox" style={{ margin: '10px' }}>
+              <Form.TextArea
+                lines="3"
+                name="redAlliance.teams"
+                label="Teams"
+                onChange={this.changeMultilineField}
+                value={redAlliance.teams.join('\n')}
+              />
+              <b>Sandstorm</b>
+              <Form.Group widths="equal">
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 1"
+                  name="redAlliance.scoringDetails.sandstorm.level1"
+                  onChange={this.changeField}
+                  value={redAlliance.scoringDetails.sandstorm.level1}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 2"
+                  name="redAlliance.scoringDetails.sandstorm.level2"
+                  onChange={this.changeField}
+                  value={redAlliance.scoringDetails.sandstorm.level2}
+                />
+              </Form.Group>
+              <Form.Input
+                autoComplete="off"
+                fluid
+                label="Hatch Panels"
+                name="redAlliance.scoringDetails.hatchPanels"
+                onChange={this.changeField}
+                value={redAlliance.scoringDetails.hatchPanels}
+              />
+              <Form.Input
+                autoComplete="off"
+                fluid
+                label="Cargo"
+                name="redAlliance.scoringDetails.cargo"
+                onChange={this.changeField}
+                value={redAlliance.scoringDetails.cargo}
+              />
+              <b>Hab Climb</b>
+              <Form.Group widths="equal">
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 1"
+                  name="redAlliance.scoringDetails.habClimb.level1"
+                  onChange={this.changeField}
+                  value={redAlliance.scoringDetails.habClimb.level1}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 2"
+                  name="redAlliance.scoringDetails.habClimb.level2"
+                  onChange={this.changeField}
+                  value={redAlliance.scoringDetails.habClimb.level2}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 3"
+                  name="redAlliance.scoringDetails.habClimb.level3"
+                  onChange={this.changeField}
+                  value={redAlliance.scoringDetails.habClimb.level3}
+                />
+              </Form.Group>
+              <b>RP Params</b>
+              <Form.Group widths="equal">
+                <Form.Checkbox
+                  label="Hab Docking"
+                  name="redAlliance.scoringDetails.habDocking"
+                  onChange={this.changeCheckbox}
+                  checked={redAlliance.scoringDetails.habDocking}
+                />
+                <Form.Checkbox
+                  label="Complete Rocket"
+                  name="redAlliance.scoringDetails.completeRocket"
+                  onChange={this.changeCheckbox}
+                  checked={redAlliance.scoringDetails.completeRocket}
+                />
+              </Form.Group>
+              <b>RED Fouls</b>
+              <Form.Group widths="equal">
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Fouls"
+                  name="redAlliance.fouls"
+                  onChange={this.changeField}
+                  value={redAlliance.fouls}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Tech Fouls"
+                  name="redAlliance.techFouls"
+                  onChange={this.changeField}
+                  value={redAlliance.techFouls}
+                />
+              </Form.Group>
+            </div>
+            {/* BLUE SCORING DETAILS */}
+            <div id="blueBox" style={{ margin: '10px' }}>
+              <Form.TextArea
+                lines="3"
+                name="blueAlliance.teams"
+                label="Teams"
+                onChange={this.changeMultilineField}
+                value={blueAlliance.teams.join('\n')}
+              />
+              <b>Sandstorm</b>
+              <Form.Group widths="equal">
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 1"
+                  name="blueAlliance.scoringDetails.sandstorm.level1"
+                  onChange={this.changeField}
+                  value={blueAlliance.scoringDetails.sandstorm.level1}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 2"
+                  name="blueAlliance.scoringDetails.sandstorm.level2"
+                  onChange={this.changeField}
+                  value={blueAlliance.scoringDetails.sandstorm.level2}
+                />
+              </Form.Group>
+              <Form.Input
+                autoComplete="off"
+                fluid
+                label="Hatch Panels"
+                name="blueAlliance.scoringDetails.hatchPanels"
+                onChange={this.changeField}
+                value={blueAlliance.scoringDetails.hatchPanels}
+              />
+              <Form.Input
+                autoComplete="off"
+                fluid
+                label="Cargo"
+                name="blueAlliance.scoringDetails.cargo"
+                onChange={this.changeField}
+                value={blueAlliance.scoringDetails.cargo}
+              />
+              <b>Hab Climb</b>
+              <Form.Group widths="equal">
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 1"
+                  name="blueAlliance.scoringDetails.habClimb.level1"
+                  onChange={this.changeField}
+                  value={blueAlliance.scoringDetails.habClimb.level1}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 2"
+                  name="blueAlliance.scoringDetails.habClimb.level2"
+                  onChange={this.changeField}
+                  value={blueAlliance.scoringDetails.habClimb.level2}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Level 3"
+                  name="blueAlliance.scoringDetails.habClimb.level3"
+                  onChange={this.changeField}
+                  value={blueAlliance.scoringDetails.habClimb.level3}
+                />
+              </Form.Group>
+              <b>RP Params</b>
+              <Form.Group widths="equal">
+                <Form.Checkbox
+                  label="Hab Docking"
+                  name="blueAlliance.scoringDetails.habDocking"
+                  onChange={this.changeCheckbox}
+                  checked={blueAlliance.scoringDetails.habDocking}
+                />
+                <Form.Checkbox
+                  label="Complete Rocket"
+                  name="blueAlliance.scoringDetails.completeRocket"
+                  onChange={this.changeCheckbox}
+                  checked={blueAlliance.scoringDetails.completeRocket}
+                />
+              </Form.Group>
+              <b>Blue Fouls</b>
+              <Form.Group widths="equal">
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Fouls"
+                  name="blueAlliance.fouls"
+                  onChange={this.changeField}
+                  value={blueAlliance.fouls}
+                />
+                <Form.Input
+                  autoComplete="off"
+                  fluid
+                  label="Tech Fouls"
+                  name="blueAlliance.techFouls"
+                  onChange={this.changeField}
+                  value={blueAlliance.techFouls}
+                />
+              </Form.Group>
+            </div>
           </Form>
         )}
       </Container>

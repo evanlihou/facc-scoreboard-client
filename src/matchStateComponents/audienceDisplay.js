@@ -4,18 +4,10 @@ import '../images/bg.jpg';
 import '../images/rocket.jpg';
 import '../Scoreboard.css';
 
-// import { subscribeToMatchUpdates } from '../socket';
 import ScoresPosted from './scoresPosted';
 import MatchTimer from './matchTimer';
 
 class AudienceDisplay extends Component {
-  constructor(props) {
-    super(props);
-    // subscribeToMatchUpdates(updatedMatch =>
-    //   this.setState({ currentMatch: updatedMatch })
-    // );
-    // state.currentMatch = this.props.currentMatch;
-  }
   state = {
     currentMatch: null
   };
@@ -32,6 +24,9 @@ class AudienceDisplay extends Component {
       <div className="app">
         <div id="background" />
         <div id="rocket" />
+        {!this.props.socket.connected ? (
+          <h1 className="red">Not connected to websocket</h1>
+        ) : null}
         {currentMatch ? (
           <div>
             <div id="MatchInfo">
@@ -43,14 +38,45 @@ class AudienceDisplay extends Component {
             {
               {
                 posted: <ScoresPosted currentMatch={currentMatch} />,
-                pending: <h1>Match is Pending</h1>,
-                inProgress: <MatchTimer currentMatch={currentMatch} />,
+                pending: (
+                  <div>
+                    <h1>Match is Pending</h1>
+                    <div id="scoreInfo" style={{ marginTop: '5%' }}>
+                      <div id="redBox" style={{ minWidth: '20%' }}>
+                        <div className="teams">
+                          Teams
+                          <ul>
+                            {currentMatch.redAlliance.teams.map(team => (
+                              <li key={team}>{team}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <div id="blueBox" style={{ minWidth: '20%' }}>
+                        <div className="teams">
+                          Teams
+                          <ul>
+                            {currentMatch.blueAlliance.teams.map(team => (
+                              <li key={team}>{team}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ),
+                inProgress: (
+                  <MatchTimer
+                    currentMatch={currentMatch}
+                    socket={this.props.socket}
+                  />
+                ),
                 eStop: <h1 className="red">EMERGENCY STOP</h1>
               }[currentMatch.matchStatus]
             }
           </div>
         ) : (
-          <h1 className="lonelyH1">Connecting to server....</h1>
+          <h1 className="lonelyH1">No current match</h1>
         )}
       </div>
     );
