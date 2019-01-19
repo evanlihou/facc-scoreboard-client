@@ -34,10 +34,10 @@ class ScoresPosted extends Component {
               </b>
             </span>
             <span className="hatch">
-              Hatch: <b>{redAlliance.scoringDetails.hatchPanels}</b>
+              Hatch: <b>{redAlliance.scoringDetails.hatchPanels * 2}</b>
             </span>
             <span className="cargo">
-              Cargo: <b>{redAlliance.scoringDetails.cargo}</b>
+              Cargo: <b>{redAlliance.scoringDetails.cargo * 3}</b>
             </span>
             <span className="climb">
               Climb:{' '}
@@ -98,10 +98,10 @@ class ScoresPosted extends Component {
               </b>
             </span>
             <span className="hatch">
-              Hatch: <b>{blueAlliance.scoringDetails.hatchPanels}</b>
+              Hatch: <b>{blueAlliance.scoringDetails.hatchPanels * 2}</b>
             </span>
             <span className="cargo">
-              Cargo: <b>{blueAlliance.scoringDetails.cargo}</b>
+              Cargo: <b>{blueAlliance.scoringDetails.cargo * 3}</b>
             </span>
             <span className="climb">
               Climb:{' '}
