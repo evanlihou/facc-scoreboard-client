@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Button, Form, Container, Message } from 'semantic-ui-react';
+import { Button, Form, Container, Message, Table } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
 class AdminDisplay extends Component {
@@ -11,7 +11,13 @@ class AdminDisplay extends Component {
     this.props.socket.on('updateMatch', updatedMatch => {
       console.log('UPDATE');
       this.setState({ currentMatch: updatedMatch });
+      this.props.socket.emit('getMatchHistory');
       console.log(updatedMatch);
+    });
+
+    this.props.socket.on('matchHistory', matches => {
+      console.log('Received Match History');
+      this.setState({ matchHistory: matches });
     });
   }
 
@@ -45,6 +51,11 @@ class AdminDisplay extends Component {
       [data.name]: data.checked,
       _id: this.state.currentMatch._id
     });
+  };
+
+  setCurrentMatch = (e, data) => {
+    console.log(e, data);
+    this.props.socket.emit('setCurrentMatch', data.value);
   };
 
   render() {
@@ -329,6 +340,41 @@ class AdminDisplay extends Component {
             </div>
           </Form>
         )}
+
+        {this.state.matchHistory ? (
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Match Name</Table.HeaderCell>
+                <Table.HeaderCell>Blue Teams</Table.HeaderCell>
+                <Table.HeaderCell>Blue Score</Table.HeaderCell>
+                <Table.HeaderCell>Red Teams</Table.HeaderCell>
+                <Table.HeaderCell>Red Score</Table.HeaderCell>
+                <Table.HeaderCell>Match State</Table.HeaderCell>
+                <Table.HeaderCell />
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {this.state.matchHistory.map(match => (
+                <Table.Row key={match._id}>
+                  <Table.Cell>
+                    {match.matchType + ' ' + match.matchNumber}
+                  </Table.Cell>
+                  <Table.Cell>{match.blueAlliance.teams.join(', ')}</Table.Cell>
+                  <Table.Cell>{match.blueAlliance.totalPoints}</Table.Cell>
+                  <Table.Cell>{match.redAlliance.teams.join(', ')}</Table.Cell>
+                  <Table.Cell>{match.redAlliance.totalPoints}</Table.Cell>
+                  <Table.Cell>{match.matchStatus}</Table.Cell>
+                  <Table.Cell>
+                    <Button onClick={this.setCurrentMatch} value={match._id}>
+                      Set Current
+                    </Button>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        ) : null}
       </Container>
     );
   }
