@@ -154,3 +154,7 @@ span {
 h1.lonelyH1 {
   margin-top: 20vh !important;
 }
+
+h1.big {
+  font-size: 5rem !important;
+}

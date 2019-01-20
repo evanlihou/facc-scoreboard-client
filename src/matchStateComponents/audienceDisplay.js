@@ -71,7 +71,7 @@ class AudienceDisplay extends Component {
                     socket={this.props.socket}
                   />
                 ),
-                eStop: <h1 className="red">EMERGENCY STOP</h1>
+                eStop: <h1 className="red big">EMERGENCY STOP</h1>
               }[currentMatch.matchStatus]
             }
           </div>

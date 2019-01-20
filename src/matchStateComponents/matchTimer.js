@@ -57,7 +57,7 @@ class MatchTimer extends Component {
       let tMinus = 150 - gameTime;
       return (
         <div>
-          <h1>
+          <h1 className="big">
             {this.state.matchState}
             <br />
 
